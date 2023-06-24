@@ -62,16 +62,17 @@ func switchInstructions(instruction string, array *[]string, write *os.File) int
 	switch instruction {
 	case "ldi":
 		r := verifyArgument((*array)[4:7])
-
 		if r == -1 {
-			err = -1
 			break
 		}
 		bytes := "0x04" + strings.Join((*array)[3:7], "")
 		writeFile(write, bytes)
 		getArgument(array, 7)
 	case "add":
-		verifyArgument((*array)[4:7])
+		r := verifyArgument((*array)[4:7])
+		if r == -1 {
+			break
+		}
 		bytes := "0x05" + strings.Join((*array)[3:7], "")
 		writeFile(write, bytes)
 		getArgument(array, 7)
