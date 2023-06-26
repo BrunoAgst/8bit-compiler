@@ -16,7 +16,7 @@ func main() {
 		if r := recover(); r != nil {
 
 			str := fmt.Sprintf("%v", r)
-			exceptions(str)
+			exceptionHandling(str)
 			if _, err := os.Stat("./file.bin"); os.IsNotExist(err) {
 				fmt.Println("[ERROR] - Compiled Error")
 			} else {
@@ -144,7 +144,7 @@ func getArgument(code *[]string, number int) {
 	*code = slice
 }
 
-func exceptions(errorCode string) {
+func exceptionHandling(errorCode string) {
 	switch errorCode {
 	case "-1":
 		fmt.Println("[ERROR] - Invalid Argument")
