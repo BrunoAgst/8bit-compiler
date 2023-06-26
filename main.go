@@ -68,6 +68,20 @@ func main() {
 func switchInstructions(instruction string, array *[]string, write *os.File) {
 
 	switch instruction {
+	case "hlt":
+		writeFile(write, 0x00)
+		getArgument(array, 3)
+	case "nop":
+		writeFile(write, 0x01)
+		getArgument(array, 3)
+	case "oti":
+		writeFile(write, 0x02)
+		getArgument(array, 3)
+	case "lda":
+		writeFile(write, 0x03)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
 	case "ldi":
 		writeFile(write, 0x04)
 		argument := verifyArgument((*array)[4:7])
@@ -78,11 +92,33 @@ func switchInstructions(instruction string, array *[]string, write *os.File) {
 		argument := verifyArgument((*array)[4:7])
 		writeFile(write, argument)
 		getArgument(array, 7)
-	case "oti":
-		writeFile(write, 0x02)
-		getArgument(array, 3)
-	case "hlt":
-		writeFile(write, 0x00)
+	case "sub":
+		writeFile(write, 0x06)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "sta":
+		writeFile(write, 0x07)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "and":
+		writeFile(write, 0x08)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "orl":
+		writeFile(write, 0x09)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "xor":
+		writeFile(write, 0x0A)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "not":
+		writeFile(write, 0x0B)
 		getArgument(array, 3)
 	default:
 		panic(-2)
