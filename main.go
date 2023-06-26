@@ -9,10 +9,10 @@ import (
 	"strings"
 )
 
-func main(){
+func main() {
 
 	file, err := os.Open("./file.asm8")
-	var code[] string
+	var code []string
 
 	if err != nil {
 		fmt.Println(err)
@@ -22,7 +22,7 @@ func main(){
 
 	defer file.Close()
 
-	fileCreate, err := os.Create("output.txt")
+	fileCreate, err := os.Create("file.txt")
 
 	if err != nil {
 		fmt.Println("Erro ao criar o arquivo: ", err)
@@ -33,24 +33,24 @@ func main(){
 
 	codeLen := len(code)
 
-    for {
+	for {
 
-		if codeLen == 0 { 
+		if codeLen == 0 {
 			break
 		}
-		instruction := strings.Join(code[:3],"")
+		instruction := strings.Join(code[:3], "")
 		r := switchInstructions(instruction, &code, fileCreate)
 
 		if r == -1 {
 			fmt.Println("Compiled Error")
-			os.Remove("output.txt")
+			os.Remove("file.txt")
 			break
 		}
 
 		codeLen = len(code)
 	}
 
-	if codeLen == 0 {	
+	if codeLen == 0 {
 		fmt.Println("finish compile")
 	}
 
@@ -58,7 +58,7 @@ func main(){
 
 func switchInstructions(instruction string, array *[]string, write *os.File) int {
 	err := 0
-	
+
 	switch instruction {
 	case "ldi":
 		r := verifyArgument((*array)[4:7])
@@ -92,14 +92,14 @@ func switchInstructions(instruction string, array *[]string, write *os.File) int
 func writeFile(file *os.File, bytes string) int {
 	_, err := file.WriteString(bytes)
 	if err != nil {
-		fmt.Println("Error write File", err);
+		fmt.Println("Error write File", err)
 		return -1
 	}
 	return 0
 }
 
 func verifyArgument(argument []string) int {
-	if(argument[0] != "x") {
+	if argument[0] != "x" {
 		return -1
 	}
 	value := strings.Join(argument[1:], "")
@@ -107,14 +107,14 @@ func verifyArgument(argument []string) int {
 	return int(number)
 }
 
-func getArgument(code *[]string, number int){
+func getArgument(code *[]string, number int) {
 	slice := (*code)[number:]
 	*code = slice
 }
 
-func removeCommentsAndScape(file *os.File) [] string {
+func removeCommentsAndScape(file *os.File) []string {
 	var valid int
-	var s []string 
+	var s []string
 
 	reader := bufio.NewReader(file)
 
