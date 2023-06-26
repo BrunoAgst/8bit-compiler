@@ -1,3 +1,4 @@
 *.asm8
 *.bin
 *.txt 
+.vscode

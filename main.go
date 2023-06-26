@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"os"
@@ -11,22 +12,36 @@ import (
 
 func main() {
 
+	defer func() {
+		if r := recover(); r != nil {
+
+			str := fmt.Sprintf("%v", r)
+			exceptions(str)
+			if _, err := os.Stat("./file.bin"); os.IsNotExist(err) {
+				fmt.Println("[ERROR] - Compiled Error")
+			} else {
+				os.Remove("file.bin")
+				fmt.Println("[ERROR] - Compiled Error")
+			}
+		}
+	}()
+
 	file, err := os.Open("./file.asm8")
 	var code []string
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println("[ERROR] - Read File", err)
+		panic(0)
 	}
 	code = removeCommentsAndScape(file)
 
 	defer file.Close()
 
-	fileCreate, err := os.Create("file.txt")
+	fileCreate, err := os.Create("file.bin")
 
 	if err != nil {
-		fmt.Println("Erro ao criar o arquivo: ", err)
-		return
+		fmt.Println("[ERROR] - Create File", err)
+		panic(0)
 	}
 
 	defer fileCreate.Close()
@@ -39,77 +54,72 @@ func main() {
 			break
 		}
 		instruction := strings.Join(code[:3], "")
-		r := switchInstructions(instruction, &code, fileCreate)
-
-		if r == -1 {
-			fmt.Println("Compiled Error")
-			os.Remove("file.txt")
-			break
-		}
+		switchInstructions(instruction, &code, fileCreate)
 
 		codeLen = len(code)
 	}
 
 	if codeLen == 0 {
-		fmt.Println("finish compile")
+		fmt.Println("[OK] - Compiled Success")
 	}
 
 }
 
-func switchInstructions(instruction string, array *[]string, write *os.File) int {
-	err := 0
+func switchInstructions(instruction string, array *[]string, write *os.File) {
 
 	switch instruction {
 	case "ldi":
-		r := verifyArgument((*array)[4:7])
-		if r == -1 {
-			break
-		}
-		bytes := "0x04" + strings.Join((*array)[3:7], "")
-		writeFile(write, bytes)
+		writeFile(write, 0x04)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
 		getArgument(array, 7)
 	case "add":
-		r := verifyArgument((*array)[4:7])
-		if r == -1 {
-			break
-		}
-		bytes := "0x05" + strings.Join((*array)[3:7], "")
-		writeFile(write, bytes)
+		writeFile(write, 0x05)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
 		getArgument(array, 7)
 	case "oti":
-		writeFile(write, "0x02")
+		writeFile(write, 0x02)
 		getArgument(array, 3)
 	case "hlt":
-		writeFile(write, "0x00")
+		writeFile(write, 0x00)
 		getArgument(array, 3)
 	default:
-		err = -1
+		panic(-2)
 	}
 
-	return err
 }
 
-func writeFile(file *os.File, bytes string) int {
-	_, err := file.WriteString(bytes)
-	if err != nil {
-		fmt.Println("Error write File", err)
-		return -1
-	}
-	return 0
+func writeFile(file *os.File, data uint8) {
+	binary.Write(file, binary.LittleEndian, data)
 }
 
-func verifyArgument(argument []string) int {
+func verifyArgument(argument []string) uint8 {
 	if argument[0] != "x" {
-		return -1
+		panic(-1)
 	}
 	value := strings.Join(argument[1:], "")
 	number, _ := strconv.ParseInt(value, 16, 64)
-	return int(number)
+	return uint8(number)
 }
 
 func getArgument(code *[]string, number int) {
 	slice := (*code)[number:]
 	*code = slice
+}
+
+func exceptions(errorCode string) {
+	switch errorCode {
+	case "-1":
+		fmt.Println("[ERROR] - Invalid Argument")
+		break
+	case "-2":
+		fmt.Println("[ERROR] - Not Found")
+		break
+	default:
+		fmt.Println("[ERROR] - Compiled Error")
+	}
+
 }
 
 func removeCommentsAndScape(file *os.File) []string {
@@ -123,7 +133,8 @@ func removeCommentsAndScape(file *os.File) []string {
 
 		if err != nil {
 			if err != io.EOF {
-				fmt.Println(err.Error())
+				fmt.Println("[ERROR] - Read Byte")
+				panic(0)
 			}
 			break
 		}
