@@ -15,7 +15,7 @@ func main() {
 	defer func() {
 		if r := recover(); r != nil {
 
-			str := fmt.Sprintf("%v", r)
+			str := fmt.Sprintf("%v:", r)
 			exceptionHandling(str)
 			if _, err := os.Stat("./file.bin"); os.IsNotExist(err) {
 				fmt.Println("[ERROR] - Compiled Error")
@@ -119,6 +119,72 @@ func switchInstructions(instruction string, array *[]string, write *os.File) {
 		getArgument(array, 7)
 	case "not":
 		writeFile(write, 0x0B)
+		getArgument(array, 3)
+	case "gta":
+		writeFile(write, 0x0C)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ifc":
+		writeFile(write, 0x0D)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ifz":
+		writeFile(write, 0x0E)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ife":
+		writeFile(write, 0x0F)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "iti":
+		writeFile(write, 0x10)
+		getArgument(array, 3)
+	case "shr":
+		writeFile(write, 0x11)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "shl":
+		writeFile(write, 0x12)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "cpa":
+		writeFile(write, 0x13)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ada":
+		writeFile(write, 0x14)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "sba":
+		writeFile(write, 0x15)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ana":
+		writeFile(write, 0x16)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ora":
+		writeFile(write, 0x17)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "xra":
+		writeFile(write, 0x18)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "swa":
+		writeFile(write, 0x19)
 		getArgument(array, 3)
 	default:
 		panic(-2)
