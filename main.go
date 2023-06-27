@@ -186,6 +186,20 @@ func switchInstructions(instruction string, array *[]string, write *os.File) {
 	case "swa":
 		writeFile(write, 0x19)
 		getArgument(array, 3)
+	case "puh":
+		writeFile(write, 0x1a)
+		getArgument(array, 3)
+	case "pop":
+		writeFile(write, 0x1b)
+		getArgument(array, 3)
+	case "csr":
+		writeFile(write, 0x1c)
+		argument := verifyArgument((*array)[4:7])
+		writeFile(write, argument)
+		getArgument(array, 7)
+	case "ret":
+		writeFile(write, 0x1d)
+		getArgument(array, 3)
 	default:
 		panic(-2)
 	}
