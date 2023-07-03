@@ -1,4 +1,4 @@
-*.asm8
+*.asm
 *.bin
 *.txt 
 .vscode
