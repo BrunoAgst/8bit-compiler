@@ -20,7 +20,13 @@ func getArgument(code *[]string, number int) {
 	*code = slice
 }
 
-func SwitchInstructions(instruction string, array *[]string, write *os.File, errors *[]string) {
+func ProcessInstruction(array *[]string, file *os.File, errors *[]string) {
+	instruction := strings.Join((*array)[:3], "")
+	switchInstructions(instruction, array, file, errors)
+
+}
+
+func switchInstructions(instruction string, array *[]string, write *os.File, errors *[]string) {
 
 	switch instruction {
 	case "hlt":

@@ -6,7 +6,6 @@ import (
 
 	"fmt"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -43,13 +42,13 @@ func main() {
 		if codeLen == 0 {
 			break
 		}
-		instruction := strings.Join(code[:3], "")
-		compiler.SwitchInstructions(instruction, &code, fileCreate, &errors)
+
+		compiler.ProcessInstruction(&code, fileCreate, &errors)
 
 		codeLen = len(code)
 		errorsLen = len(errors)
-
 	}
+
 	if errorsLen == 0 {
 		fmt.Println("[OK] - Compiled Success")
 	}
