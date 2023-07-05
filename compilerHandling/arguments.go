@@ -1,9 +1,12 @@
 package compilerHandling
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/BrunoAgst/8bit-compiler/errorsHandling"
 )
 
 func verifyArgument(argument []string, errors *[]string) uint8 {
@@ -20,10 +23,37 @@ func getArgument(code *[]string, number int) {
 	*code = slice
 }
 
-func ProcessInstruction(array *[]string, file *os.File, errors *[]string) {
+func processInstruction(array *[]string, file *os.File, errors *[]string) {
 	instruction := strings.Join((*array)[:3], "")
 	switchInstructions(instruction, array, file, errors)
 
+}
+
+func Execute(code *[]string, file *os.File, errors *[]string) {
+
+	codeLen := len((*code))
+	errorsLen := 0
+
+	for {
+
+		if errorsLen > 0 {
+			errorsHandling.PrintError(errors, errorsLen)
+			break
+		}
+
+		if codeLen == 0 {
+			break
+		}
+
+		processInstruction(code, file, errors)
+
+		codeLen = len((*code))
+		errorsLen = len((*errors))
+	}
+
+	if errorsLen == 0 {
+		fmt.Println("[OK] - Compiled Success")
+	}
 }
 
 func switchInstructions(instruction string, array *[]string, write *os.File, errors *[]string) {
